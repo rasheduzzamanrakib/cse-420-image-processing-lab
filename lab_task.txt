@@ -1,0 +1,11 @@
+Lab 01: Image Reading, RGB → Grayscale, Binary Conversion, Resize, Histogram, Crop/ROI, Rotation, Brightness Enhancement, Negative Image.
+
+Lab 02: imnoise use to Gaussian, Salt & Pepper, Poisson noise, Manual Rayleigh Noise, Manual Gamma Noise (gamrnd), Manual Exponential Noise (exprnd), Manual Uniform Noise
+
+Lab 03: 4-Neighbour, Diagonal Neighbour, 8-Neighbour, Euclidean Distance, City Block Distance, Chessboard Distance.
+
+Lab 04: Fourier Transform/FFT, Magnitude Spectrum, Ideal Low Pass Filter, Ideal High Pass Filter.
+
+Lab 05: Dilation, Erosion, Opening, Closing, Pixel Replication/Nearest Neighbor, Bilinear Interpolation, Otsu Threshold Segmentation.
+
+Lab 06: Canny, Prewitt, K-Means Clustering, Color K-Means, Manual Thresholding, Connected Component Labeling, Otsu Automatic Thresholding.
