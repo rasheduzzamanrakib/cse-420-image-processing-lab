@@ -1,4 +1,4 @@
-# CSE-420: Digital Image Processing Lab
+# CSE-420: Image Processing Lab
 
 **Department of Computer Science and Engineering**  
 **Dhaka International University (DIU)**
