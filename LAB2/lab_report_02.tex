@@ -1,0 +1,237 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{ragged2e}
+
+%----------------------------------------
+% Page Setup for A4
+%----------------------------------------
+\geometry{
+  a4paper,
+  top=1in,
+  bottom=1in,
+  left=1in,
+  right=1in
+}
+
+\setstretch{1.2}
+
+%----------------------------------------
+% Section title formatting
+%----------------------------------------
+\titleformat{\section}
+  {\normalfont\bfseries\fontsize{14}{14}\selectfont}
+  {\thesection}{1em}{}
+
+%----------------------------------------
+% Code listing style
+%----------------------------------------
+\lstdefinestyle{matlabstyle}{
+  language=Matlab,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{green!60!black},
+  stringstyle=\color{orange!80!black},
+  frame=none,
+  numbers=none,
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=2
+}
+
+%----------------------------------------
+\begin{document}
+
+%----------------------------------------
+% Cover Page
+%----------------------------------------
+\begin{titlepage}
+\centering
+
+\vspace*{0.5cm}
+\includegraphics[width=0.22\textwidth]{diu_logo.png}\par
+\vspace{0.5cm}
+
+{\Large \textbf{Department of Computer Science and Engineering} \par}
+\vspace{0.2cm}
+{\Large \textbf{Dhaka International University} \par}
+
+\vspace{0.8cm}
+
+{\normalsize
+Semester: 12th \par
+Lab Report No: 02 \par
+Course Code: CSE-420 \par
+Course Title: Image Processing Lab \par
+Report Title: Image Noise Addition Using imnoise and Manual Methods in MATLAB \par
+}
+
+\vspace{1cm}
+
+{\Large \textbf{Submitted By} \par}
+\vspace{0.3cm}
+
+{\normalsize
+Rasheduzzaman Rakib \par
+Reg. No.: CS-D-77-22-120080 \par
+Roll: 37 \par
+Batch: D-77 \par
+Department of Computer Science and Engineering \par
+Dhaka International University \par
+}
+
+\vspace{1cm}
+
+{\Large \textbf{Submitted To} \par}
+\vspace{0.3cm}
+
+{\normalsize
+Md. Muksit Ul Islam \par
+Assistant Professor \par
+Department of Computer Science and Engineering \par
+Dhaka International University \par
+}
+
+\vfill
+
+{\normalsize Submission Date: 25th September 2026 \par}
+{\normalsize Summer 2026 \par}
+
+\end{titlepage}
+
+
+%----------------------------------------
+% Lab Report
+%----------------------------------------
+
+\section{Name}
+
+\textbf{Image Noise Addition Using imnoise and Manual Methods in MATLAB}\\[0.3em]
+Topics covered: Gaussian Noise, Salt \& Pepper Noise, Poisson Noise,
+Manual Rayleigh Noise, Manual Gamma Noise, Manual Exponential Noise,
+Manual Uniform Noise.
+
+%----------------------------------------
+
+\section{Description}
+
+This lab demonstrates the addition of seven different types of noise to a
+grayscale image in MATLAB. The built-in image peppers.png is first converted
+to grayscale, then each noise type is applied and displayed in a subplot grid.
+Three noises are added using MATLAB's imnoise function; the remaining four
+are constructed manually using probability distributions.
+
+\begin{enumerate}
+  \item \textbf{Gaussian Noise:} Added via imnoise with the 'gaussian' model.
+        It follows a normal distribution and manifests as a uniform graininess spread across the entire image.
+
+  \item \textbf{Salt \& Pepper Noise:} Added via imnoise with density $d = 0.05$.
+        Randomly sets 5\% of pixels to either 0 (pepper) or 255 (salt),
+        creating scattered black and white dots.
+
+  \item \textbf{Poisson Noise:} Added via imnoise with the 'poisson' model.
+        Noise variance equals the local pixel intensity, making it
+        signal-dependent (brighter areas have more variance).
+
+  \item \textbf{Manual Rayleigh Noise:} Generated using the inverse CDF method.
+        Scaled by 20 and added to the grayscale image.
+
+  \item \textbf{Manual Gamma Noise:} Drawn from a Gamma distribution using
+        gamrnd(2, 1), scaled by 20, and added to the pixel intensities.
+        Produces asymmetric, positively-skewed noise.
+
+  \item \textbf{Manual Exponential Noise:} Drawn from an exponential distribution
+        using exprnd(1), scaled by 20, and added to the image.
+        Results in heavy right-tailed intensity shifts.
+
+  \item \textbf{Manual Uniform Noise:} Drawn from $\mathcal{U}(0,1)$ using rand,
+        scaled by 20, and added uniformly across all pixels, causing a
+        mild, even brightness increase with random variation.
+\end{enumerate}
+
+%----------------------------------------
+
+\section{Code}
+
+\begin{lstlisting}[style=matlabstyle]
+I = imread('peppers.png');
+gr = rgb2gray(I);
+
+% 1. gaussian noise
+gaussian = imnoise(gr, 'gaussian');
+subplot(3,3,1);
+imshow(gaussian);
+title('gaussian noise');
+
+% 2. salt and pepper noise
+sp = imnoise(gr, 'salt & pepper', 0.05);
+subplot(3,3,2);
+imshow(sp);
+title('salt and pepper noise');
+
+% 3. poisson noise
+poisson = imnoise(gr, 'poisson');
+subplot(3,3,3);
+imshow(poisson);
+title('poisson noise');
+
+% 4. manual rayleigh noise
+rayleigh = rand(size(gr));
+rayleigh = sqrt(-2 * log(1 - rayleigh));
+rayleigh = uint8(double(gr) + rayleigh * 20);
+subplot(3,3,4);
+imshow(rayleigh);
+title('rayleigh noise');
+
+% 5. manual gamma noise
+gamma = gamrnd(2, 1, size(gr));
+gamma = uint8(double(gr) + gamma * 20);
+subplot(3,3,5);
+imshow(gamma);
+title('gamma noise');
+
+% 6. manual exponential noise
+exponential = exprnd(1, size(gr));
+exponential = uint8(double(gr) + exponential * 20);
+subplot(3,3,6);
+imshow(exponential);
+title('exponential noise');
+
+% 7. manual uniform noise
+uniform = rand(size(gr));
+uniform = uint8(double(gr) + uniform * 20);
+subplot(3,3,7);
+imshow(uniform);
+title('uniform noise');
+\end{lstlisting}
+
+%----------------------------------------
+
+\section{Output}
+
+Figure~\ref{fig:output} shows the seven noise types applied to the grayscale
+peppers.png image.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.82\textwidth]{Figure_1.png}
+  \caption{Seven noise models applied to grayscale peppers.png test image.}
+  \label{fig:output}
+\end{figure}
+
+Figure~\ref{fig:output} confirms the distinct visual characteristics of each
+noise model: Gaussian (1) produces uniform grain; Salt \& Pepper (2) shows
+isolated white/black dots; Poisson (3) is visually subtle as it is
+signal-dependent; the manually generated noises (4--7) produce a brightening
+effect due to positive-valued additive offsets scaled by 20.
+
+\end{document}
