@@ -1,0 +1,232 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{ragged2e}
+
+%----------------------------------------
+% Page Setup for A4
+%----------------------------------------
+\geometry{
+  a4paper,
+  top=1in,
+  bottom=1in,
+  left=1in,
+  right=1in
+}
+
+\setstretch{1.2}
+
+%----------------------------------------
+% Section title formatting
+%----------------------------------------
+\titleformat{\section}
+  {\normalfont\bfseries\fontsize{14}{14}\selectfont}
+  {\thesection}{1em}{}
+
+%----------------------------------------
+% Code listing style
+%----------------------------------------
+\lstdefinestyle{matlabstyle}{
+  language=Matlab,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{green!60!black},
+  stringstyle=\color{orange!80!black},
+  frame=none,
+  numbers=none,
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=2
+}
+
+%----------------------------------------
+\begin{document}
+
+%----------------------------------------
+% Cover Page
+%----------------------------------------
+\begin{titlepage}
+\centering
+
+\vspace*{0.5cm}
+\includegraphics[width=0.22\textwidth]{diu_logo.png}\par
+\vspace{0.5cm}
+
+{\Large \textbf{Department of Computer Science and Engineering} \par}
+\vspace{0.2cm}
+{\Large \textbf{Dhaka International University} \par}
+
+\vspace{0.8cm}
+
+{\normalsize
+Semester: 12th \par
+Lab Report No: 03 \par
+Course Code: CSE-420 \par
+Course Title: Image Processing Lab \par
+Report Title: Pixel Neighbourhood and Distance Measures in MATLAB \par
+}
+
+\vspace{1cm}
+
+{\Large \textbf{Submitted By} \par}
+\vspace{0.3cm}
+
+{\normalsize
+Rasheduzzaman Rakib \par
+Reg. No.: CS-D-77-22-120080 \par
+Roll: 37 \par
+Batch: D-77 \par
+Department of Computer Science and Engineering \par
+Dhaka International University \par
+}
+
+\vspace{1cm}
+
+{\Large \textbf{Submitted To} \par}
+\vspace{0.3cm}
+
+{\normalsize
+Md. Muksit Ul Islam \par
+Assistant Professor \par
+Department of Computer Science and Engineering \par
+Dhaka International University \par
+}
+
+\vfill
+
+{\normalsize Submission Date: 25th September 2026 \par}
+{\normalsize Summer 2026 \par}
+
+\end{titlepage}
+
+
+%----------------------------------------
+% Lab Report
+%----------------------------------------
+
+\section{Name}
+
+\textbf{Pixel Neighbourhood and Distance Measures in MATLAB}\\[0.3em]
+Topics covered: 4-Neighbour, Diagonal Neighbour, 8-Neighbour,
+Euclidean Distance, City Block Distance, Chessboard Distance.
+
+%----------------------------------------
+
+\section{Description}
+
+This lab explores pixel connectivity and distance metrics in digital images
+using MATLAB. A $5 \times 5$ integer matrix is used as a sample image.
+The centre pixel at position $(3,3)$ is selected and its various neighbours
+are identified. Three standard distance measures between two pixels are then
+computed.
+
+\begin{enumerate}
+  \item \textbf{4-Neighbour:} The four pixels directly adjacent to a pixel
+        $(x,y)$ along the horizontal and vertical axes: $(x-1,y)$,
+        $(x+1,y)$, $(x,y-1)$, and $(x,y+1)$. For pixel $(3,3)$ these are
+        the values 8, 18, 12, and 14.
+
+  \item \textbf{Diagonal Neighbour:} The four pixels located at the four
+        diagonal corners of $(x,y)$: $(x-1,y-1)$, $(x-1,y+1)$,
+        $(x+1,y-1)$, and $(x+1,y+1)$. For pixel $(3,3)$ these are
+        7, 9, 17, and 19.
+
+  \item \textbf{8-Neighbour:} The full $3\times3$ block surrounding $(x,y)$,
+        combining both 4-neighbours and diagonal neighbours — a total of
+        eight surrounding pixels.
+
+  \item \textbf{Euclidean Distance:} The straight-line distance between two
+        pixels $(x_1,y_1)$ and $(x_2,y_2)$, computed as
+        $D = \sqrt{(x_2-x_1)^2 + (y_2-y_1)^2}$.
+        Between $(3,3)$ and $(5,5)$ this gives $D = 2.83$.
+
+  \item \textbf{City Block Distance:} Also called Manhattan distance, it sums
+        the absolute differences along each axis:
+        $D = |x_2-x_1| + |y_2-y_1|$.
+        Between $(3,3)$ and $(5,5)$ this gives $D = 4$.
+
+  \item \textbf{Chessboard Distance:} The maximum of the absolute differences
+        along each axis: $D = \max(|x_2-x_1|,\, |y_2-y_1|)$.
+        Between $(3,3)$ and $(5,5)$ this gives $D = 2$.
+\end{enumerate}
+
+%----------------------------------------
+
+\section{Code}
+
+\begin{lstlisting}[style=matlabstyle]
+clc;
+clear;
+A=[1 2 3 4 5;
+6 7 8 9 10;
+11 12 13 14 15;
+16 17 18 19 20;
+21 22 23 24 25];
+disp('image matrix');
+disp(A);
+x=3;
+y=3;
+p=A(x,y);
+fprintf('selected pixel = %d\n',p);
+
+% 1. 4-neighbour
+N4={A(x-1,y),A(x+1,y),A(x,y-1),A(x,y+1)};
+disp('4-neighbours');
+disp(N4);
+
+% 2. diagonal neighbours
+ND=[A(x-1,y-1),A(x-1,y+1),A(x+1,y-1),A(x+1,y+1)];
+disp('diagonal neighbours');
+disp(ND);
+
+% 3. 8-neighbour
+N8=A(x-1:x+1,y-1:y+1);
+disp('8-neighbours');
+disp(N8);
+
+% 4. euclidean distance
+x2=5;
+y2=5;
+D=sqrt((x2-x)^2+(y2-y)^2);
+fprintf('euclidean distance = %.2f\n',D);
+
+% 5. city block distance
+D=abs(x2-x)+abs(y2-y);
+fprintf('city block distance = %d\n',D);
+
+% 6. chessboard distance
+D=max(abs(x2-x),abs(y2-y));
+fprintf('chessboard distance = %d\n',D);
+\end{lstlisting}
+
+%----------------------------------------
+
+\section{Output}
+
+Figure~\ref{fig:output} shows the MATLAB Command Window output produced by
+running lab\_03.m.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.82\textwidth]{Figure_1.png}
+  \caption{MATLAB Command Window output showing neighbourhood values and
+           distance results for the selected pixel.}
+  \label{fig:output}
+\end{figure}
+
+Figure~\ref{fig:output} confirms the expected results: the 4-neighbours of
+pixel $(3,3)$ (value 13) are 8, 18, 12, and 14; the diagonal neighbours are
+7, 9, 17, and 19; the full 8-neighbourhood is the $3\times3$ sub-matrix
+centred at $(3,3)$. The Euclidean, City Block, and Chessboard distances
+between $(3,3)$ and $(5,5)$ are 2.83, 4, and 2 respectively.
+
+\end{document}

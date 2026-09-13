@@ -1,0 +1,267 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{ragged2e}
+
+%----------------------------------------
+% Page Setup for A4
+%----------------------------------------
+\geometry{
+  a4paper,
+  top=1in,
+  bottom=1in,
+  left=1in,
+  right=1in
+}
+
+\setstretch{1.2}
+
+%----------------------------------------
+% Section title formatting
+%----------------------------------------
+\titleformat{\section}
+  {\normalfont\bfseries\fontsize{14}{14}\selectfont}
+  {\thesection}{1em}{}
+
+%----------------------------------------
+% Code listing style
+%----------------------------------------
+\lstdefinestyle{matlabstyle}{
+  language=Matlab,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{green!60!black},
+  stringstyle=\color{orange!80!black},
+  frame=none,
+  numbers=none,
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=2
+}
+
+%----------------------------------------
+\begin{document}
+
+%----------------------------------------
+% Cover Page
+%----------------------------------------
+\begin{titlepage}
+\centering
+
+\vspace*{0.5cm}
+\includegraphics[width=0.22\textwidth]{diu_logo.png}\par
+\vspace{0.5cm}
+
+{\Large \textbf{Department of Computer Science and Engineering} \par}
+\vspace{0.2cm}
+{\Large \textbf{Dhaka International University} \par}
+
+\vspace{0.8cm}
+
+{\normalsize
+Semester: 12th \par
+Lab Report No: 06 \par
+Course Code: CSE-420 \par
+Course Title: Image Processing Lab \par
+Report Title: Edge Detection, K-Means Clustering, Connected Component Labeling, and Thresholding in MATLAB \par
+}
+
+\vspace{1cm}
+
+{\Large \textbf{Submitted By} \par}
+\vspace{0.3cm}
+
+{\normalsize
+Rasheduzzaman Rakib \par
+Reg. No.: CS-D-77-22-120080 \par
+Roll: 37 \par
+Batch: D-77 \par
+Department of Computer Science and Engineering \par
+Dhaka International University \par
+}
+
+\vspace{1cm}
+
+{\Large \textbf{Submitted To} \par}
+\vspace{0.3cm}
+
+{\normalsize
+Md. Muksit Ul Islam \par
+Assistant Professor \par
+Department of Computer Science and Engineering \par
+Dhaka International University \par
+}
+
+\vfill
+
+{\normalsize Submission Date: 25th September 2026 \par}
+{\normalsize Summer 2026 \par}
+
+\end{titlepage}
+
+
+%----------------------------------------
+% Lab Report
+%----------------------------------------
+
+\section{Name}
+
+\textbf{Edge Detection, K-Means Clustering, Connected Component Labeling, and Thresholding in MATLAB}\\[0.3em]
+Topics covered: Canny Edge Detection, Prewitt Edge Detection, K-Means Color Segmentation, Object Extraction, Manual Thresholding, Connected Component Labeling, and Otsu Thresholding.
+
+%----------------------------------------
+
+\section{Description}
+
+This lab demonstrates edge detection, unsupervised pixel clustering, and object segmentation methods in MATLAB using peppers.png, cameraman.tif, and coins.png.
+
+\begin{enumerate}
+  \item \textbf{Canny Edge Detection:} Identifies prominent edges through Gaussian smoothing, directional gradient computation, non-maximum suppression, and hysteresis thresholding via edge with canny parameter.
+
+  \item \textbf{Prewitt Edge Detection:} Uses 3$\times$3 horizontal and vertical gradient operator masks to locate intensity boundaries in grayscale images.
+
+  \item \textbf{K-Means Clustering:} Groups RGB pixel vectors into $K = 4$ clusters using the kmeans algorithm to segment regions having similar color profiles.
+
+  \item \textbf{Object Extraction and Color Quantization:} Creates a binary cluster mask to isolate peppers against a black background and remaps pixels to their centroid colors.
+
+  \item \textbf{Manual Thresholding:} Binarizes the cameraman image by applying a fixed user-defined cutoff value (0.2) via im2bw.
+
+  \item \textbf{Connected Component Labeling:} Applies bwlabel on thresholded coins image to label contiguous pixel groups and return the total number of connected objects.
+
+  \item \textbf{Otsu Automatic Thresholding:} Computes the optimal threshold with graythresh to cleanly separate foreground objects from the background automatically.
+\end{enumerate}
+
+%----------------------------------------
+
+\section{Code}
+
+\begin{lstlisting}[style=matlabstyle]
+% read images
+I = imread('peppers.png');
+I1 = rgb2gray(I);
+C = imread('cameraman.tif');
+coins = imread('coins.png');
+
+% 1. canny edge detection
+BW1 = edge(I1, 'canny');
+
+% 2. prewitt edge detection
+BW2 = edge(I1, 'prewitt');
+
+% 3. k-means clustering
+X = double(reshape(I, [], 3));
+K = 4;
+[idx, C1] = kmeans(X, K);
+cluster_img = reshape(idx, size(I,1), size(I,2));
+pepper_cluster = 2;
+mask = (cluster_img == pepper_cluster);
+result = zeros(size(I), 'uint8');
+
+for k = 1:3
+    temp = I(:,:,k);
+    temp(~mask) = 0;
+    result(:,:,k) = temp;
+end
+
+% 4. color k-means
+new_image = C1(idx,:);
+new_image = uint8(reshape(new_image, size(I)));
+
+figure;
+subplot(2,3,1);
+imshow(I);
+title('original image');
+
+subplot(2,3,2);
+imshow(BW1);
+title('canny edge detection');
+
+subplot(2,3,3);
+imshow(BW2);
+title('prewitt edge detection');
+
+subplot(2,3,4);
+imshow(cluster_img,[]);
+title('k-means clusters');
+
+subplot(2,3,5);
+imshow(result);
+title('peppers with black background');
+
+subplot(2,3,6);
+imshow(new_image);
+title('color k-means segmentation');
+
+% 5. manual thresholding
+BW3 = im2bw(C, 0.2);
+
+% 6. connected component labeling
+BW4 = im2bw(coins, graythresh(coins));
+[L,num] = bwlabel(BW4);
+
+% 7. otsu automatic thresholding
+level = graythresh(C);
+BW5 = im2bw(C, level);
+
+% display remaining results
+figure;
+subplot(2,3,1);
+imshow(C);
+title('original image');
+
+subplot(2,3,2);
+imshow(BW3);
+title('manual threshold');
+
+subplot(2,3,3);
+imshow(coins);
+title('coins image');
+
+subplot(2,3,4);
+imshow(L,[]);
+title('connected components');
+
+subplot(2,3,5);
+imshow(C);
+title('original image');
+
+subplot(2,3,6);
+imshow(BW5);
+title('otsu segmentation');
+
+disp('number of connected components =');
+disp(num);
+\end{lstlisting}
+
+%----------------------------------------
+
+\section{Output}
+
+Figures~\ref{fig:edges_kmeans} and~\ref{fig:thresh_cc} present the output figures obtained from the execution of the code.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Figure_1.png}
+  \caption{Edge detection and K-means color clustering on peppers.png: original, Canny edges, Prewitt edges, cluster index map, isolated pepper object, and color-quantized segmentation.}
+  \label{fig:edges_kmeans}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Figure_2.png}
+  \caption{Segmentation and connected components: manual threshold, connected component labeling on coins.png, and Otsu automatic thresholding on cameraman.tif.}
+  \label{fig:thresh_cc}
+\end{figure}
+
+Figure~\ref{fig:edges_kmeans} demonstrates that Canny detects fine, thin, continuous boundaries superior to Prewitt, while K-means cleanly clusters chromatic features. Figure~\ref{fig:thresh_cc} shows bwlabel differentiating and counting each individual coin component, whereas Otsu thresholding delivers superior separation compared to manual thresholding.
+
+\end{document}

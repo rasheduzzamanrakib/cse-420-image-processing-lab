@@ -1,0 +1,245 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{ragged2e}
+
+%----------------------------------------
+% Page Setup for A4
+%----------------------------------------
+\geometry{
+  a4paper,
+  top=1in,
+  bottom=1in,
+  left=1in,
+  right=1in
+}
+
+\setstretch{1.2}
+
+%----------------------------------------
+% Section title formatting
+%----------------------------------------
+\titleformat{\section}
+  {\normalfont\bfseries\fontsize{14}{14}\selectfont}
+  {\thesection}{1em}{}
+
+%----------------------------------------
+% Code listing style
+%----------------------------------------
+\lstdefinestyle{matlabstyle}{
+  language=Matlab,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{green!60!black},
+  stringstyle=\color{orange!80!black},
+  frame=none,
+  numbers=none,
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=2
+}
+
+%----------------------------------------
+\begin{document}
+
+%----------------------------------------
+% Cover Page
+%----------------------------------------
+\begin{titlepage}
+\centering
+
+\vspace*{0.5cm}
+\includegraphics[width=0.22\textwidth]{diu_logo.png}\par
+\vspace{0.5cm}
+
+{\Large \textbf{Department of Computer Science and Engineering} \par}
+\vspace{0.2cm}
+{\Large \textbf{Dhaka International University} \par}
+
+\vspace{0.8cm}
+
+{\normalsize
+Semester: 12th \par
+Lab Report No: 05 \par
+Course Code: CSE-420 \par
+Course Title: Image Processing Lab \par
+Report Title: Morphological Operations, Image Interpolation, and Otsu Segmentation in MATLAB \par
+}
+
+\vspace{1cm}
+
+{\Large \textbf{Submitted By} \par}
+\vspace{0.3cm}
+
+{\normalsize
+Rasheduzzaman Rakib \par
+Reg. No.: CS-D-77-22-120080 \par
+Roll: 37 \par
+Batch: D-77 \par
+Department of Computer Science and Engineering \par
+Dhaka International University \par
+}
+
+\vspace{1cm}
+
+{\Large \textbf{Submitted To} \par}
+\vspace{0.3cm}
+
+{\normalsize
+Md. Muksit Ul Islam \par
+Assistant Professor \par
+Department of Computer Science and Engineering \par
+Dhaka International University \par
+}
+
+\vfill
+
+{\normalsize Submission Date: 25th September 2026 \par}
+{\normalsize Summer 2026 \par}
+
+\end{titlepage}
+
+
+%----------------------------------------
+% Lab Report
+%----------------------------------------
+
+\section{Name}
+
+\textbf{Morphological Operations, Image Interpolation, and Otsu Segmentation in MATLAB}\\[0.3em]
+Topics covered: Morphological Dilation, Erosion, Opening, Closing, Nearest Neighbor Interpolation, Bilinear Interpolation, and Otsu Threshold Segmentation.
+
+%----------------------------------------
+
+\section{Description}
+
+This lab explores mathematical morphology, spatial interpolation techniques, and global image thresholding in MATLAB.
+
+\begin{enumerate}
+  \item \textbf{Morphological Dilation:} Expands the boundaries of foreground objects using a 3$\times$3 square structuring element via imdilate, filling small holes and connecting adjacent components.
+
+  \item \textbf{Morphological Erosion:} Shrinks foreground objects by stripping away boundary pixels with imerode, attenuating thin structures and eliminating isolated background noise.
+
+  \item \textbf{Morphological Opening:} Performs erosion followed by dilation using imopen to suppress small bright artifacts without altering the overall shape and size of larger structures.
+
+  \item \textbf{Morphological Closing:} Performs dilation followed by erosion using imclose to bridge narrow gaps, join broken contours, and fill small dark inclusions.
+
+  \item \textbf{Nearest Neighbor Interpolation:} Enlarges image dimensions using imresize by copying the nearest pixel value, which is computationally fast but can produce blocky pixelation.
+
+  \item \textbf{Bilinear Interpolation:} Scales the image by computing a distance-weighted average of the four surrounding pixels, resulting in smoother transitions.
+
+  \item \textbf{Otsu's Threshold Segmentation:} Employs graythresh to automatically find an optimal global threshold that maximizes inter-class variance, segmenting the image into binary foreground and background via im2bw.
+\end{enumerate}
+
+%----------------------------------------
+
+\section{Code}
+
+\begin{lstlisting}[style=matlabstyle]
+% read image
+I = imread('text.png');
+BW = im2bw(I);
+SE = strel('square', 3);
+
+% 1. dilation
+D = imdilate(BW, SE);
+
+% 2. erosion
+E = imerode(BW, SE);
+
+% 3. opening
+O = imopen(BW, SE);
+
+% 4. closing
+C = imclose(BW, SE);
+
+figure;
+subplot(2,3,1);
+imshow(I);
+title('original image');
+
+subplot(2,3,2);
+imshow(BW);
+title('binary image');
+
+subplot(2,3,3);
+imshow(D);
+title('dilated image');
+
+subplot(2,3,4);
+imshow(E);
+title('eroded image');
+
+subplot(2,3,5);
+imshow(O);
+title('opened image');
+
+subplot(2,3,6);
+imshow(C);
+title('Closed image');
+
+% read cameraman image
+I = imread('cameraman.tif');
+
+% 5. pixel replication / nearest Neighbor
+Z_nearest = imresize(I, 2, 'nearest');
+
+% 6. bilinear interpolation
+Z_bilinear = imresize(I, 2, 'bilinear');
+
+% 7. otsu threshold segmentation
+if size(I,3) == 3
+    I = rgb2gray(I);
+end
+level = graythresh(I);
+BW_otsu = im2bw(I, level);
+
+figure;
+subplot(2,3,1);
+imshow(I);
+title('original image');
+
+subplot(2,3,2);
+imshow(Z_nearest);
+title('nearest neighbor');
+
+subplot(2,3,3);
+imshow(Z_bilinear);
+title('bilinear interpolation');
+
+subplot(2,3,4);
+imshow(BW_otsu);
+title('otsu segmentation');
+\end{lstlisting}
+
+%----------------------------------------
+
+\section{Output}
+Figure~\ref{fig:morph} and~\ref{fig:interp_otsu} display the experimental outputs obtained from the MATLAB execution.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.65\textwidth]{Figure_1.png}
+  \caption{Morphological operations on text.png: original, binary, dilated, eroded, opened, and closed images.}
+  \label{fig:morph}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.65\textwidth]{Figure_2.png}
+  \caption{Image interpolation and Otsu segmentation on cameraman.tif: original, nearest neighbor, bilinear interpolation, and Otsu segmented output.}
+  \label{fig:interp_otsu}
+\end{figure}
+
+Figure~\ref{fig:morph} shows how dilation thickens text characters while erosion thins them, with opening removing small protrusions and closing sealing intra-stroke discontinuities. Figure~\ref{fig:interp_otsu} illustrates that bilinear interpolation produces noticeably smoother edges than nearest neighbor resampling, and Otsu's method isolates the primary subject cleanly from the background.
+
+\end{document}
